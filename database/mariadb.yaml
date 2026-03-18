@@ -1,0 +1,83 @@
+slug: mariadb
+name: MariaDB
+category: database
+icon: mariadb
+description: A community-developed fork of MySQL with extra features and performance improvements.
+
+versions:
+  - "11.8"
+  - "11.4"
+  - "11.2"
+default_version: "11.8"
+
+fields:
+  - key: service_name
+    label: Service Name
+    type: string
+    placeholder: my-mariadb
+    required: true
+    generated: false
+
+  - key: port
+    label: Host Port
+    type: port
+    default: 3306
+    required: true
+
+  - key: db_name
+    label: Database Name
+    type: string
+    placeholder: mydb
+    required: true
+    generated: false
+
+  - key: db_user
+    label: Database User
+    type: string
+    placeholder: myuser
+    required: true
+    generated: false
+
+  - key: db_password
+    label: Password
+    type: credential
+    required: true
+    generated: true
+    store_hash: true
+    show_plaintext_once: true
+
+  - key: root_password
+    label: Root Password
+    type: credential
+    required: true
+    generated: true
+    store_hash: true
+    show_plaintext_once: true
+
+containers:
+  - name: "{service_name}"
+    image: "mariadb:{version}"
+    image_podman: "docker.io/mariadb:{version}"
+    restart: unless-stopped
+    env:
+      MARIADB_ROOT_PASSWORD: "{root_password}"
+      MARIADB_DATABASE: "{db_name}"
+      MARIADB_USER: "{db_user}"
+      MARIADB_PASSWORD: "{db_password}"
+    ports:
+      - host: "{port}"
+        container: 3306
+        protocol: tcp
+    volumes:
+      - name: "{service_name}_data"
+        mount: /var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    labels:
+      tidefly.managed: "true"
+      tidefly.service: "{service_id}"
+      tidefly.template: "mariadb"

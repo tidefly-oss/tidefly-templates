@@ -1,0 +1,75 @@
+slug: mongodb
+name: MongoDB
+category: database
+icon: mongodb
+description: A document-oriented NoSQL database for modern applications.
+
+versions:
+  - "8.2"
+  - "8.0"
+default_version: "8.0"
+
+fields:
+  - key: service_name
+    label: Service Name
+    type: string
+    placeholder: my-mongodb
+    required: true
+    generated: false
+
+  - key: port
+    label: Host Port
+    type: port
+    default: 27017
+    required: true
+
+  - key: db_name
+    label: Database Name
+    type: string
+    placeholder: mydb
+    required: true
+    generated: false
+
+  - key: db_user
+    label: Root Username
+    type: string
+    placeholder: admin
+    required: true
+    generated: false
+
+  - key: db_password
+    label: Root Password
+    type: credential
+    required: true
+    generated: true
+    store_hash: true
+    show_plaintext_once: true
+
+containers:
+  - name: "{service_name}"
+    image: "mongo:{version}"
+    image_podman: "docker.io/mongo:{version}"
+    restart: unless-stopped
+    env:
+      MONGO_INITDB_ROOT_USERNAME: "{db_user}"
+      MONGO_INITDB_ROOT_PASSWORD: "{db_password}"
+      MONGO_INITDB_DATABASE: "{db_name}"
+    ports:
+      - host: "{port}"
+        container: 27017
+        protocol: tcp
+    volumes:
+      - name: "{service_name}_data"
+        mount: /data/db
+      - name: "{service_name}_config"
+        mount: /data/configdb
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    labels:
+      tidefly.managed: "true"
+      tidefly.service: "{service_id}"
+      tidefly.template: "mongodb"
