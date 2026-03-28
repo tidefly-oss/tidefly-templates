@@ -1,0 +1,69 @@
+slug: postgres
+name: PostgreSQL
+category: database
+icon: postgres
+description: A powerful, open source object-relational database system.
+
+versions:
+  - "17"      # letzte Version mit /var/lib/postgresql/data (altes Layout)
+  - "18"      # neu: braucht /var/lib/postgresql als Mount (nicht /data)
+  - "16"
+  - "15"
+default_version: "17"
+
+fields:
+  - key: service_name
+    label: Service Name
+    type: string
+    placeholder: my-postgres
+    required: true
+    generated: false
+
+  - key: port
+    label: Host Port
+    type: port
+    default: "5432"
+    required: true
+
+  - key: password
+    label: Postgres Password
+    type: credential
+    required: true
+    generated: true
+    store_hash: true
+    show_plaintext_once: true
+
+  - key: db_name
+    label: Database Name
+    type: string
+    default: "app"
+    required: true
+
+containers:
+  - name: "{service_name}"
+    image: "postgres:{version}"
+    image_podman: "docker.io/postgres:{version}"
+    restart: unless-stopped
+    env:
+      POSTGRES_PASSWORD: "{password}"
+      POSTGRES_DB: "{db_name}"
+      # Postgres 18+: PGDATA muss auf ein Subdir zeigen.
+      # Verhindert "Error: in 18+, these Docker images are configured..."
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - host: "{port}"
+        container: 5432
+        protocol: tcp
+    volumes:
+      - name: "{service_name}_data"
+        mount: /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d {db_name}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+    labels:
+      tidefly.managed: "true"
+      tidefly.service: "{service_id}"
+      tidefly.template: "postgres"
