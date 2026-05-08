@@ -61,7 +61,7 @@ containers:
     volumes:
       - name: "{service_name}_data"
         mount: /data/db
-      - name: "{service_name}_config"
+      - name: "{service_name}config"
         mount: /data/configdb
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
