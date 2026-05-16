@@ -1,83 +1,104 @@
-slug: mysql
-name: MySQL
-category: database
-icon: mysql
-description: The world's most popular open source relational database.
-
-versions:
-  - "10.2.0"
-  - "9.7"
-  - "8.4.0"
-default_version: "9.7"
-
-fields:
-  - key: service_name
-    label: Service Name
-    type: string
-    placeholder: my-mysql
-    required: true
-    generated: false
-
-  - key: port
-    label: Host Port
-    type: port
-    default: 3306
-    required: true
-
-  - key: db_name
-    label: Database Name
-    type: string
-    placeholder: mydb
-    required: true
-    generated: false
-
-  - key: db_user
-    label: Database User
-    type: string
-    placeholder: myuser
-    required: true
-    generated: false
-
-  - key: db_password
-    label: Password
-    type: credential
-    required: true
-    generated: true
-    store_hash: true
-    show_plaintext_once: true
-
-  - key: root_password
-    label: Root Password
-    type: credential
-    required: true
-    generated: true
-    store_hash: true
-    show_plaintext_once: true
-
-containers:
-  - name: "{service_name}"
-    image: "mysql:{version}"
-    image_podman: "docker.io/mysql:{version}"
-    restart: unless-stopped
-    env:
-      MYSQL_ROOT_PASSWORD: "{root_password}"
-      MYSQL_DATABASE: "{db_name}"
-      MYSQL_USER: "{db_user}"
-      MYSQL_PASSWORD: "{db_password}"
-    ports:
-      - host: "{port}"
-        container: 3306
-        protocol: tcp
-    volumes:
-      - name: "{service_name}_data"
-        mount: /var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p{root_password}"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
-    labels:
-      tidefly.managed: "true"
-      tidefly.service: "{service_id}"
-      tidefly.template: "mysql"
+{
+  "slug": "mysql",
+  "name": "MySQL",
+  "category": "database",
+  "icon": "mysql",
+  "description": "The world's most popular open source relational database.",
+  "versions": ["9.7", "8.4.0"],
+  "default_version": "9.7",
+  "fields": [
+    {
+      "key": "service_name",
+      "label": "Service Name",
+      "type": "string",
+      "placeholder": "my-mysql",
+      "required": true,
+      "generated": false
+    },
+    {
+      "key": "db_name",
+      "label": "Database Name",
+      "type": "string",
+      "placeholder": "mydb",
+      "required": true,
+      "generated": false
+    },
+    {
+      "key": "db_user",
+      "label": "Database User",
+      "type": "string",
+      "placeholder": "myuser",
+      "required": true,
+      "generated": false
+    },
+    {
+      "key": "db_password",
+      "label": "Password",
+      "type": "credential",
+      "required": true,
+      "generated": true,
+      "store_hash": true,
+      "show_plaintext_once": true
+    },
+    {
+      "key": "root_password",
+      "label": "Root Password",
+      "type": "credential",
+      "required": true,
+      "generated": true,
+      "store_hash": true,
+      "show_plaintext_once": true
+    },
+    {
+      "key": "expose",
+      "label": "Expose externally via TLS",
+      "type": "boolean",
+      "default": false,
+      "required": false
+    },
+    {
+      "key": "external_port",
+      "label": "External Port",
+      "type": "port",
+      "required": false,
+      "depends_on": "expose"
+    }
+  ],
+  "manifest": {
+    "apiVersion": "tidefly/v1",
+    "kind": "service",
+    "metadata": {
+      "name": "{service_name}",
+      "labels": {
+        "tidefly.template": "mysql",
+        "tidefly.source": "template"
+      }
+    },
+    "spec": {
+      "container": {
+        "image": "mysql:{version}",
+        "env": [
+          { "name": "MYSQL_ROOT_PASSWORD", "value": "{root_password}" },
+          { "name": "MYSQL_DATABASE", "value": "{db_name}" },
+          { "name": "MYSQL_USER", "value": "{db_user}" },
+          { "name": "MYSQL_PASSWORD", "value": "{db_password}" }
+        ],
+        "volumes": [
+          { "name": "{service_name}_data", "mountPath": "/var/lib/mysql" }
+        ]
+      },
+      "health": {
+        "test": ["CMD", "mysqladmin", "ping", "-h", "localhost"],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 10,
+        "startPeriod": "30s"
+      },
+      "scaling": {
+        "replicas": 1,
+        "restart": "always",
+        "strategy": "rolling"
+      }
+    }
+  }
+}

@@ -1,39 +1,60 @@
-slug: whoami
-name: Whoami
-category: utilities
-icon: whoami
-description: A tiny HTTP server that echoes request information. Useful for testing deployments and network connectivity.
-versions:
-  - "latest"
-default_version: "latest"
-fields:
-  - key: service_name
-    label: Service Name
-    type: string
-    placeholder: whoami
-    required: true
-    generated: false
-  - key: port
-    label: Host Port
-    type: port
-    default: 8080
-    required: true
-containers:
-  - name: "{service_name}"
-    image: "nginx:alpine"
-    image_podman: "docker.io/nginx:alpine"
-    restart: unless-stopped
-    ports:
-      - host: "{port}"
-        container: 80
-        protocol: tcp
-    healthcheck:
-      test: [ "CMD", "wget", "-qO-", "http://localhost/" ]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 5s
-    labels:
-      tidefly.managed: "true"
-      tidefly.service: "{service_id}"
-      tidefly.template: "whoami"
+{
+  "slug": "whoami",
+  "name": "Whoami",
+  "category": "utilities",
+  "icon": "whoami",
+  "description": "A tiny HTTP server that echoes request information. Useful for testing deployments.",
+  "versions": ["latest"],
+  "default_version": "latest",
+  "fields": [
+    {
+      "key": "service_name",
+      "label": "Service Name",
+      "type": "string",
+      "placeholder": "whoami",
+      "required": true,
+      "generated": false
+    },
+    {
+      "key": "domain",
+      "label": "Domain",
+      "type": "string",
+      "placeholder": "whoami.example.com",
+      "required": false,
+      "generated": false
+    }
+  ],
+  "manifest": {
+    "apiVersion": "tidefly/v1",
+    "kind": "service",
+    "metadata": {
+      "name": "{service_name}",
+      "labels": {
+        "tidefly.template": "whoami",
+        "tidefly.source": "template"
+      }
+    },
+    "spec": {
+      "container": {
+        "image": "traefik/whoami:latest"
+      },
+      "expose": {
+        "port": 80,
+        "domain": "{domain}",
+        "tls": true
+      },
+      "health": {
+        "test": ["CMD", "wget", "-qO-", "http://localhost:80/"],
+        "interval": "10s",
+        "timeout": "3s",
+        "retries": 3,
+        "startPeriod": "5s"
+      },
+      "scaling": {
+        "replicas": 1,
+        "restart": "always",
+        "strategy": "rolling"
+      }
+    }
+  }
+}

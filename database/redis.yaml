@@ -1,61 +1,73 @@
-slug: redis
-name: Redis
-category: cache
-icon: redis
-description: An in-memory data structure store used as a database, cache, and message broker.
-
-versions:
-  - "8.0"
-  - "7.4"
-  - "7.2"
-  - "7.0"
-default_version: "8.0"
-
-fields:
-  - key: service_name
-    label: Service Name
-    type: string
-    placeholder: my-redis
-    required: true
-    generated: false
-
-  - key: port
-    label: Host Port
-    type: port
-    default: "6379"
-    required: true
-
-  - key: password
-    label: Password
-    type: credential
-    required: true
-    generated: true
-    store_hash: true
-    show_plaintext_once: true
-
-containers:
-  - name: "{service_name}"
-    image: "redis:{version}"
-    image_podman: "docker.io/redis:{version}"
-    restart: unless-stopped
-    command: >
-      redis-server
-      --requirepass {password}
-      --appendonly yes
-      --maxmemory-policy allkeys-lru
-    ports:
-      - host: "{port}"
-        container: 6379
-        protocol: tcp
-    volumes:
-      - name: "{service_name}_data"
-        mount: /data
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "{password}", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-    labels:
-      tidefly.managed: "true"
-      tidefly.service: "{service_id}"
-      tidefly.template: "redis"
+{
+  "slug": "redis",
+  "name": "Redis",
+  "category": "cache",
+  "icon": "redis",
+  "description": "An in-memory data structure store used as a database, cache, and message broker.",
+  "versions": ["8.0", "7.4", "7.2", "7.0"],
+  "default_version": "8.0",
+  "fields": [
+    {
+      "key": "service_name",
+      "label": "Service Name",
+      "type": "string",
+      "placeholder": "my-redis",
+      "required": true,
+      "generated": false
+    },
+    {
+      "key": "password",
+      "label": "Password",
+      "type": "credential",
+      "required": true,
+      "generated": true,
+      "store_hash": true,
+      "show_plaintext_once": true
+    },
+    {
+      "key": "expose",
+      "label": "Expose externally via TLS",
+      "type": "boolean",
+      "default": false,
+      "required": false
+    },
+    {
+      "key": "external_port",
+      "label": "External Port",
+      "type": "port",
+      "required": false,
+      "depends_on": "expose"
+    }
+  ],
+  "manifest": {
+    "apiVersion": "tidefly/v1",
+    "kind": "service",
+    "metadata": {
+      "name": "{service_name}",
+      "labels": {
+        "tidefly.template": "redis",
+        "tidefly.source": "template"
+      }
+    },
+    "spec": {
+      "container": {
+        "image": "redis:{version}",
+        "command": ["redis-server", "--requirepass", "{password}", "--appendonly", "yes", "--maxmemory-policy", "allkeys-lru"],
+        "volumes": [
+          { "name": "{service_name}_data", "mountPath": "/data" }
+        ]
+      },
+      "health": {
+        "test": ["CMD", "redis-cli", "-a", "{password}", "ping"],
+        "interval": "5s",
+        "timeout": "3s",
+        "retries": 10
+      },
+      "scaling": {
+        "replicas": 1,
+        "restart": "always",
+        "strategy": "rolling"
+      }
+    }
+  }
+}
