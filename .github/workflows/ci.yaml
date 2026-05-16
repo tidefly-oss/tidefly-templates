@@ -11,10 +11,7 @@ jobs:
     name: Validate Templates
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-
-      - name: Install yamllint
-        run: pip install yamllint
-
-      - name: Lint YAML
-        run: yamllint .
+      - uses: actions/checkout@v4
+      - name: Validate JSON templates
+        run: |
+          find . -name "*.json" | xargs -I{} python3 -m json.tool {} > /dev/null
