@@ -1,0 +1,74 @@
+{
+  "slug": "locust",
+  "name": "Locust",
+  "category": "utilities",
+  "icon": "locust",
+  "description": "Open-source load testing tool with a web UI. Define user behavior in Python and simulate millions of users.",
+  "versions": ["2.32", "2.31", "latest"],
+  "default_version": "2.32",
+  "fields": [
+    {
+      "key": "service_name",
+      "label": "Service Name",
+      "type": "string",
+      "placeholder": "locust",
+      "required": true,
+      "generated": false
+    },
+    {
+      "key": "target_host",
+      "label": "Target Host",
+      "type": "string",
+      "placeholder": "http://my-service",
+      "required": true,
+      "generated": false
+    },
+    {
+      "key": "domain",
+      "label": "Domain (optional)",
+      "type": "string",
+      "placeholder": "locust.example.com",
+      "required": false,
+      "generated": false
+    }
+  ],
+  "manifest": {
+    "apiVersion": "tidefly/v1",
+    "kind": "service",
+    "metadata": {
+      "name": "{service_name}",
+      "labels": {
+        "tidefly.template": "locust",
+        "tidefly.source": "template"
+      }
+    },
+    "spec": {
+      "container": {
+        "image": "locustio/locust:{version}",
+        "env": [
+          { "name": "LOCUST_HOST", "value": "{target_host}" }
+        ],
+        "ports": [
+          { "host": 8089, "container": 8089 }
+        ]
+      },
+      "expose": {
+        "port": 8089,
+        "domain": "{domain}",
+        "tls": true
+      },
+      "health": {
+        "test": ["CMD", "curl", "-f", "http://localhost:8089/"],
+        "interval": "15s",
+        "timeout": "5s",
+        "retries": 3,
+        "startPeriod": "10s"
+      },
+      "scaling": {
+        "replicas": 1,
+        "restart": "always",
+        "strategy": "rolling"
+      }
+    }
+  }
+}
