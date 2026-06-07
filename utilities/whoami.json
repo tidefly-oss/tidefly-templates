@@ -4,7 +4,9 @@
   "category": "utilities",
   "icon": "whoami",
   "description": "A tiny HTTP server that echoes request information. Useful for testing deployments.",
-  "versions": ["latest"],
+  "versions": [
+    "latest"
+  ],
   "default_version": "latest",
   "fields": [
     {
@@ -44,7 +46,11 @@
         "tls": true
       },
       "health": {
-        "test": ["CMD", "wget", "-qO-", "http://localhost:80/"],
+        "test": [
+          "CMD",
+          "/whoami",
+          "--help"
+        ],
         "interval": "10s",
         "timeout": "3s",
         "retries": 3,

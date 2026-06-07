@@ -58,11 +58,11 @@
         "tls": true
       },
       "health": {
-        "test": ["CMD", "curl", "-f", "http://localhost:8089/"],
-        "interval": "15s",
+        "test": ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8089/')"],
+        "interval": "30s",
         "timeout": "5s",
         "retries": 3,
-        "startPeriod": "10s"
+        "startPeriod": "15s"
       },
       "scaling": {
         "replicas": 1,
