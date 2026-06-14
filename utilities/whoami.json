@@ -59,7 +59,7 @@
       "scaling": {
         "replicas": 1,
         "restart": "always",
-        "strategy": "rolling"
+        "strategy": "blue-green"
       }
     }
   }
