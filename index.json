@@ -1,1 +1,152 @@
-[]
+[
+  {
+    "slug": "mariadb",
+    "name": "MariaDB",
+    "category": "database",
+    "icon": "mariadb",
+    "description": "A community-developed fork of MySQL with extra features and performance improvements.",
+    "tags": [
+      "database",
+      "sql",
+      "mysql-compatible",
+      "self-hosted"
+    ],
+    "versions": [
+      "11.8",
+      "11.4",
+      "11.2"
+    ],
+    "default_version": "11.8",
+    "docs_url": "https://mariadb.org/documentation/",
+    "min_tidefly": "0.1.0",
+    "official": true
+  },
+  {
+    "slug": "mongodb",
+    "name": "MongoDB",
+    "category": "database",
+    "icon": "mongodb",
+    "description": "A document-oriented NoSQL database for modern applications.",
+    "tags": [
+      "database",
+      "nosql",
+      "document",
+      "self-hosted"
+    ],
+    "versions": [
+      "8.0",
+      "8.2"
+    ],
+    "default_version": "8.0",
+    "docs_url": "https://www.mongodb.com/docs/",
+    "min_tidefly": "0.1.0",
+    "official": true
+  },
+  {
+    "slug": "mysql",
+    "name": "MySQL",
+    "category": "database",
+    "icon": "mysql",
+    "description": "The world's most popular open source relational database.",
+    "tags": [
+      "database",
+      "sql",
+      "self-hosted"
+    ],
+    "versions": [
+      "9.7",
+      "8.4.0"
+    ],
+    "default_version": "9.7",
+    "docs_url": "https://dev.mysql.com/doc/",
+    "min_tidefly": "0.1.0",
+    "official": true
+  },
+  {
+    "slug": "postgres",
+    "name": "PostgreSQL",
+    "category": "database",
+    "icon": "postgres",
+    "description": "A powerful, open source object-relational database system.",
+    "tags": [
+      "database",
+      "sql",
+      "self-hosted"
+    ],
+    "versions": [
+      "17",
+      "18",
+      "16",
+      "15"
+    ],
+    "default_version": "17",
+    "docs_url": "https://www.postgresql.org/docs/",
+    "min_tidefly": "0.1.0",
+    "official": true
+  },
+  {
+    "slug": "redis",
+    "name": "Redis",
+    "category": "cache",
+    "icon": "redis",
+    "description": "An in-memory data structure store used as a database, cache, and message broker.",
+    "tags": [
+      "cache",
+      "database",
+      "in-memory",
+      "message-broker",
+      "self-hosted"
+    ],
+    "versions": [
+      "8.0",
+      "7.4",
+      "7.2",
+      "7.0"
+    ],
+    "default_version": "8.0",
+    "docs_url": "https://redis.io/docs/",
+    "min_tidefly": "0.1.0",
+    "official": true
+  },
+  {
+    "slug": "locust",
+    "name": "Locust",
+    "category": "devtools",
+    "icon": "locust",
+    "description": "Open-source load testing tool with a web UI. Define user behavior in Python and simulate millions of users.",
+    "tags": [
+      "devtools",
+      "testing",
+      "load-testing",
+      "self-hosted"
+    ],
+    "versions": [
+      "2.32",
+      "2.31",
+      "latest"
+    ],
+    "default_version": "2.32",
+    "docs_url": "https://docs.locust.io/",
+    "min_tidefly": "0.1.0",
+    "official": true
+  },
+  {
+    "slug": "whoami",
+    "name": "Whoami",
+    "category": "devtools",
+    "icon": "whoami",
+    "description": "A tiny HTTP server that echoes request information. Useful for testing deployments.",
+    "tags": [
+      "devtools",
+      "testing",
+      "utilities"
+    ],
+    "versions": [
+      "latest"
+    ],
+    "default_version": "latest",
+    "docs_url": "https://github.com/traefik/whoami",
+    "min_tidefly": "0.1.0",
+    "official": true
+  }
+]
