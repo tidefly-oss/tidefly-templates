@@ -1,0 +1,142 @@
+{
+  "_comment": [
+    "This is a fully documented example template for Tidefly.",
+    "Copy this file into a new folder (e.g. my-app/template.json),",
+    "fill in the fields and remove any you don't need.",
+    "Fields marked REQUIRED must always be present.",
+    "Fields marked OPTIONAL can be omitted — Tidefly uses sensible defaults.",
+    "",
+    "Naming rules:",
+    "  - slug:         lowercase, hyphens only, matches folder name",
+    "  - service_name: what the user types — becomes the container name",
+    "",
+    "Field types:",
+    "  string      — plain text input",
+    "  credential  — auto-generated secret, stored hashed, shown once",
+    "  boolean     — toggle (true/false)",
+    "  port        — port number, only shown when depends_on field is true",
+    "  select      — dropdown with predefined options",
+    "",
+    "Template variables:",
+    "  Use {field_key} anywhere in the manifest to inject user input.",
+    "  Use {version} to inject the selected version."
+  ],
+
+  "_____METADATA_____": "──────────────────────────────────────────────────────",
+
+  "slug": "my-app",
+  "name": "My App",
+  "description": "A short description shown in the deploy wizard. Keep it under 120 chars.",
+  "icon": "my-app",
+  "category": "database",
+  "tags": ["database", "sql", "self-hosted"],
+  "versions": ["2.1", "2.0", "1.9"],
+  "default_version": "2.1",
+  "docs_url": "https://docs.example.com",
+  "min_tidefly": "0.1.0",
+  "official": false,
+
+  "_____FIELDS_____": "──────────────────────────────────────────────────────",
+
+  "fields": [
+    {
+      "_comment": "REQUIRED — service_name is always the first field",
+      "key": "service_name",
+      "label": "Service Name",
+      "type": "string",
+      "placeholder": "my-app",
+      "required": true,
+      "generated": false
+    },
+    {
+      "_comment": "OPTIONAL — plain string input",
+      "key": "db_name",
+      "label": "Database Name",
+      "type": "string",
+      "placeholder": "mydb",
+      "required": true,
+      "generated": false
+    },
+    {
+      "_comment": "OPTIONAL — credential: auto-generated, hashed in DB, shown to user once",
+      "key": "db_password",
+      "label": "Database Password",
+      "type": "credential",
+      "required": true,
+      "generated": true,
+      "store_hash": true,
+      "show_plaintext_once": true
+    },
+    {
+      "_comment": "OPTIONAL — boolean toggle",
+      "key": "expose",
+      "label": "Expose externally via TLS",
+      "type": "boolean",
+      "default": false,
+      "required": false
+    },
+    {
+      "_comment": "OPTIONAL — port field, only shown when expose=true",
+      "key": "external_port",
+      "label": "External Port",
+      "type": "port",
+      "required": false,
+      "depends_on": "expose"
+    },
+    {
+      "_comment": "OPTIONAL — select dropdown",
+      "key": "log_level",
+      "label": "Log Level",
+      "type": "select",
+      "options": ["debug", "info", "warn", "error"],
+      "default": "info",
+      "required": false
+    }
+  ],
+
+  "_____MANIFEST_____": "──────────────────────────────────────────────────────",
+
+  "manifest": {
+    "apiVersion": "tidefly/v1",
+    "kind": "service",
+    "metadata": {
+      "name": "{service_name}",
+      "labels": {
+        "tidefly.template": "my-app",
+        "tidefly.source": "template"
+      }
+    },
+    "spec": {
+      "container": {
+        "image": "my-app:{version}",
+        "env": [
+          { "name": "DB_NAME",     "value": "{db_name}" },
+          { "name": "DB_PASSWORD", "value": "{db_password}" },
+          { "name": "LOG_LEVEL",   "value": "{log_level}" }
+        ],
+        "volumes": [
+          { "name": "{service_name}_data", "mountPath": "/var/lib/my-app" }
+        ]
+      },
+      "health": {
+        "_comment": "Use 'http' for HTTP healthcheck or 'test' for exec command",
+        "http": "/health",
+        "interval": "10s",
+        "timeout": "5s",
+        "retries": 5,
+        "startPeriod": "30s"
+      },
+      "scaling": {
+        "replicas": 1,
+        "restart": "always",
+        "strategy": "blue-green",
+        "_comment_strategy": "Options: rolling | blue-green | recreate"
+      },
+      "expose": {
+        "_comment": "Only rendered when expose=true",
+        "port": "{external_port}",
+        "tls": true
+      }
+    }
+  }
+}

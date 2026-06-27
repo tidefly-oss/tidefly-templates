@@ -4,8 +4,12 @@
   "category": "database",
   "icon": "mongodb",
   "description": "A document-oriented NoSQL database for modern applications.",
+  "tags": ["database", "nosql", "document", "self-hosted"],
   "versions": ["8.0", "8.2"],
   "default_version": "8.0",
+  "docs_url": "https://www.mongodb.com/docs/",
+  "min_tidefly": "0.1.0",
+  "official": true,
   "fields": [
     {
       "key": "service_name",
@@ -71,10 +75,10 @@
         "env": [
           { "name": "MONGO_INITDB_ROOT_USERNAME", "value": "{db_user}" },
           { "name": "MONGO_INITDB_ROOT_PASSWORD", "value": "{db_password}" },
-          { "name": "MONGO_INITDB_DATABASE", "value": "{db_name}" }
+          { "name": "MONGO_INITDB_DATABASE",      "value": "{db_name}" }
         ],
         "volumes": [
-          { "name": "{service_name}_data", "mountPath": "/data/db" },
+          { "name": "{service_name}_data",   "mountPath": "/data/db" },
           { "name": "{service_name}_config", "mountPath": "/data/configdb" }
         ]
       },

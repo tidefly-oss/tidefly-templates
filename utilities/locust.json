@@ -1,11 +1,15 @@
 {
   "slug": "locust",
   "name": "Locust",
-  "category": "utilities",
+  "category": "devtools",
   "icon": "locust",
   "description": "Open-source load testing tool with a web UI. Define user behavior in Python and simulate millions of users.",
+  "tags": ["devtools", "testing", "load-testing", "self-hosted"],
   "versions": ["2.32", "2.31", "latest"],
   "default_version": "2.32",
+  "docs_url": "https://docs.locust.io/",
+  "min_tidefly": "0.1.0",
+  "official": true,
   "fields": [
     {
       "key": "service_name",
@@ -67,7 +71,7 @@
       "scaling": {
         "replicas": 1,
         "restart": "always",
-        "strategy": "rolling"
+        "strategy": "blue-green"
       }
     }
   }

@@ -4,8 +4,12 @@
   "category": "database",
   "icon": "mariadb",
   "description": "A community-developed fork of MySQL with extra features and performance improvements.",
+  "tags": ["database", "sql", "mysql-compatible", "self-hosted"],
   "versions": ["11.8", "11.4", "11.2"],
   "default_version": "11.8",
+  "docs_url": "https://mariadb.org/documentation/",
+  "min_tidefly": "0.1.0",
+  "official": true,
   "fields": [
     {
       "key": "service_name",
@@ -79,9 +83,9 @@
         "image": "mariadb:{version}",
         "env": [
           { "name": "MARIADB_ROOT_PASSWORD", "value": "{root_password}" },
-          { "name": "MARIADB_DATABASE", "value": "{db_name}" },
-          { "name": "MARIADB_USER", "value": "{db_user}" },
-          { "name": "MARIADB_PASSWORD", "value": "{db_password}" }
+          { "name": "MARIADB_DATABASE",      "value": "{db_name}" },
+          { "name": "MARIADB_USER",          "value": "{db_user}" },
+          { "name": "MARIADB_PASSWORD",      "value": "{db_password}" }
         ],
         "volumes": [
           { "name": "{service_name}_data", "mountPath": "/var/lib/mysql" }

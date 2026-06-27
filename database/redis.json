@@ -4,8 +4,12 @@
   "category": "cache",
   "icon": "redis",
   "description": "An in-memory data structure store used as a database, cache, and message broker.",
+  "tags": ["cache", "database", "in-memory", "message-broker", "self-hosted"],
   "versions": ["8.0", "7.4", "7.2", "7.0"],
   "default_version": "8.0",
+  "docs_url": "https://redis.io/docs/",
+  "min_tidefly": "0.1.0",
+  "official": true,
   "fields": [
     {
       "key": "service_name",

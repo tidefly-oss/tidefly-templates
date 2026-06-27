@@ -4,8 +4,12 @@
   "category": "database",
   "icon": "mysql",
   "description": "The world's most popular open source relational database.",
+  "tags": ["database", "sql", "self-hosted"],
   "versions": ["9.7", "8.4.0"],
   "default_version": "9.7",
+  "docs_url": "https://dev.mysql.com/doc/",
+  "min_tidefly": "0.1.0",
+  "official": true,
   "fields": [
     {
       "key": "service_name",
@@ -79,9 +83,9 @@
         "image": "mysql:{version}",
         "env": [
           { "name": "MYSQL_ROOT_PASSWORD", "value": "{root_password}" },
-          { "name": "MYSQL_DATABASE", "value": "{db_name}" },
-          { "name": "MYSQL_USER", "value": "{db_user}" },
-          { "name": "MYSQL_PASSWORD", "value": "{db_password}" }
+          { "name": "MYSQL_DATABASE",      "value": "{db_name}" },
+          { "name": "MYSQL_USER",          "value": "{db_user}" },
+          { "name": "MYSQL_PASSWORD",      "value": "{db_password}" }
         ],
         "volumes": [
           { "name": "{service_name}_data", "mountPath": "/var/lib/mysql" }

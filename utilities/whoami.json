@@ -1,13 +1,15 @@
 {
   "slug": "whoami",
   "name": "Whoami",
-  "category": "utilities",
+  "category": "devtools",
   "icon": "whoami",
   "description": "A tiny HTTP server that echoes request information. Useful for testing deployments.",
-  "versions": [
-    "latest"
-  ],
+  "tags": ["devtools", "testing", "utilities"],
+  "versions": ["latest"],
   "default_version": "latest",
+  "docs_url": "https://github.com/traefik/whoami",
+  "min_tidefly": "0.1.0",
+  "official": true,
   "fields": [
     {
       "key": "service_name",
@@ -46,11 +48,7 @@
         "tls": true
       },
       "health": {
-        "test": [
-          "CMD",
-          "/whoami",
-          "--help"
-        ],
+        "test": ["CMD", "/whoami", "--help"],
         "interval": "10s",
         "timeout": "3s",
         "retries": 3,
