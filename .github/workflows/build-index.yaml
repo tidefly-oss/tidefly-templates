@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "**/*.json"
+      - "!index.json"
       - ".github/workflows/build-index.yaml"
   workflow_dispatch:
 
