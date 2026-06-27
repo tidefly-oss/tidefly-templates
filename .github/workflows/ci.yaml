@@ -12,6 +12,67 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate JSON templates
+
+      - name: Validate JSON syntax
         run: |
-          find . -name "*.json" | xargs -I{} python3 -m json.tool {} > /dev/null
+          echo "Checking JSON syntax..."
+          ERRORS=0
+          find . -name "*.json" ! -name "index.json" ! -path "./example/*" | while read f; do
+            if ! python3 -m json.tool "$f" > /dev/null 2>&1; then
+              echo "❌ Invalid JSON: $f"
+              ERRORS=$((ERRORS + 1))
+            else
+              echo "✅ $f"
+            fi
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "$ERRORS file(s) failed JSON validation"
+            exit 1
+          fi
+
+      - name: Validate required fields
+        run: |
+          echo "Checking required fields..."
+          ERRORS=0
+          find . -name "*.json" ! -name "index.json" ! -path "./example/*" | while read f; do
+            MISSING=""
+            for field in slug name category icon description versions default_version fields manifest; do
+              VAL=$(jq -r --arg f "$field" '.[$f] // empty' "$f")
+              if [ -z "$VAL" ]; then
+                MISSING="$MISSING $field"
+              fi
+            done
+            if [ -n "$MISSING" ]; then
+              echo "❌ $f missing required fields:$MISSING"
+              ERRORS=$((ERRORS + 1))
+            else
+              echo "✅ $f"
+            fi
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "$ERRORS template(s) failed field validation"
+            exit 1
+          fi
+
+      - name: Validate manifest is valid JSON
+        run: |
+          echo "Checking manifest field is valid JSON..."
+          ERRORS=0
+          find . -name "*.json" ! -name "index.json" ! -path "./example/*" | while read f; do
+            MANIFEST=$(jq '.manifest' "$f")
+            if [ -z "$MANIFEST" ] || [ "$MANIFEST" = "null" ]; then
+              echo "❌ $f: manifest is empty or null"
+              ERRORS=$((ERRORS + 1))
+            else
+              echo "✅ $f"
+            fi
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "$ERRORS template(s) have invalid manifest"
+            exit 1
+          fi
+
+      - name: Summary
+        run: |
+          TOTAL=$(find . -name "*.json" ! -name "index.json" ! -path "./example/*" | wc -l)
+          echo "✅ All $TOTAL templates passed validation"

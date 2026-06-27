@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "**/template.json"
+      - "**/*.json"
       - ".github/workflows/build-index.yaml"
   workflow_dispatch:
 
@@ -23,6 +23,17 @@ jobs:
         run: |
           echo "Building index.json from all templates..."
 
+          FILES=$(find . -name "*.json" \
+            ! -path "./example/*" \
+            ! -name "index.json" \
+            | sort)
+
+          if [ -z "$FILES" ]; then
+            echo "[]" > index.json
+            echo "No templates found"
+            exit 0
+          fi
+
           jq -n \
             '[inputs | {
               slug,
@@ -37,13 +48,12 @@ jobs:
               min_tidefly,
               official
             }]' \
-            $(find . -name "template.json" \
-              ! -path "./example/*" \
-              | sort) \
+            $FILES \
           > index.json
 
           COUNT=$(jq length index.json)
           echo "Built index.json with $COUNT templates"
+          cat index.json | jq .
 
       - name: Check for changes
         id: diff
@@ -66,7 +76,6 @@ jobs:
           git commit -m "chore: rebuild index.json"
           git push origin chore/rebuild-index --force
 
-          # Open PR if not already open, silently succeed if it exists
           gh pr create \
             --title "chore: rebuild index.json" \
             --body "Automatically generated. Updates \`index.json\` to reflect the latest templates on \`main\`." \
